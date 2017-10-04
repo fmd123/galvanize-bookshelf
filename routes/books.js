@@ -43,7 +43,7 @@ router.get('/books/:id', (req, res, next) => {
       //Can use res.json INSTEAD OF:
       //res.setHeader('Content-Type', 'application/json')
       //res.send(JSON.stringify(items))
-      knex.destroy();
+      // knex.destroy();
     })
     .catch((err) => {
       next(err)
@@ -81,7 +81,7 @@ router.post('/books', (req,res,next)=>{
      const latestBook = camelizeKeys(result[0])
      console.log("lATESTBOOK" + latestBook);
      res.json(latestBook)
-     knex(destroy);
+    //  knex.destroy();
    })
    .catch((err) => {
      next(err)
