@@ -43,7 +43,7 @@ router.get('/books/:id', (req, res, next) => {
       //Can use res.json INSTEAD OF:
       //res.setHeader('Content-Type', 'application/json')
       //res.send(JSON.stringify(items))
-      knex(destroy);
+      knex.destroy();
     })
     .catch((err) => {
       next(err)
