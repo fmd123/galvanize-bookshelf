@@ -73,13 +73,12 @@ router.post('/books', (req,res,next)=>{
     return res.sendStatus(404)
   }
   const newBook = {title, author, genre, description, coverUrl};
-  console.log("NEWBOOK" + newBook);
+  //console.log("NEWBOOK" + newBook);
   //knex query builder
   knex('books')
    .insert(decamelizeKeys(newBook), '*')
    .then((result)=>{
      const latestBook = camelizeKeys(result[0])
-     console.log("lATESTBOOK" + latestBook);
      res.json(latestBook)
     //  knex.destroy();
    })
@@ -87,31 +86,60 @@ router.post('/books', (req,res,next)=>{
      next(err)
    })
 
-
 })
 
 
 //UPDATE a book's table entry
-// router.get('/books/:id', (req,res,next)=>{
-//   const id = Number.parseInt(req.params.id)
-//   //condition needed for id problems
-//   //knex query builder
-//   knex('books')
-//    .update('')
-//    .where('id', id)
-//    .then((result)=>{
-//
-//      res.json('')
-//      knex(destroy);
-//    })
-//    .catch((err)=>{
-//      console.log(err);
-//      knex(destroy);
-//      process.exit(1)
-//    })
+router.patch('/books/:id', (req,res,next)=>{
+  const id = Number.parseInt(req.params.id)
+  console.log('ID ID ID ID ID' + id);
+  //condition needed for id problems
+  if(Number.isNaN(id)){
+    return res.sendStatus(404)
+  }
+  //knex query builder
+  knex('books')
+   .where('id', id)
+   .first()
+   .then((result)=>{
+     if(!result){
+       return res.sendStatus(404)
+     }
+     const {title, author, genre, description, coverUrl} = req.body;
+     console.log('REQ.BODY IS ' + {title, author, genre, description, coverUrl});
+     const revisedBookArr = {}
+     //empty array to get the values from req.body
+     //one by one...
+     if (title){
+       revisedBookArr.title = title
+     }
+     if (author){
+       revisedBookArr.author = author
+     }
+     if (genre){
+       revisedBookArr.genre = genre
+     }
+     if (description){
+       revisedBookArr.description = description
+     }
+     if (coverUrl){
+       revisedBookArr.coverUrl = coverUrl
+     }
+     //console.log('REVISEDBOOKARR ' + revisedBookArr);
+     return knex('books')
+      .update(decamelizeKeys(revisedBookArr), '*')
+      .where('id', id)
+   })
+   .then((result)=>{
+     const revisedBook = camelizeKeys(result[0])
+     res.json(revisedBook)
+   })
+   .catch((err) => {
+     next(err)
+   })
 
-//
-// })
+
+})
 //DELETE a book
 // router.get('/books/:id', (req,res,next)=>{
 //   const id = Number.parseInt(req.params.id)
