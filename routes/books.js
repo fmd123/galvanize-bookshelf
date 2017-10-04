@@ -38,9 +38,9 @@ router.get('/books/:id', (req, res, next) => {
     //.first will return first item inside the array which is an object
     .then((result) => {
       const book = camelizeKeys(result)
-      console.log(book);
+      //console.log(book);
       res.json(book);
-      //use res.json INSTEAD OF: 
+      //Can use res.json INSTEAD OF:
       //res.setHeader('Content-Type', 'application/json')
       //res.send(JSON.stringify(items))
       knex(destroy);
@@ -51,25 +51,44 @@ router.get('/books/:id', (req, res, next) => {
 })
 
 //CREATE A book (Insert)
-// router.post('/books', (req,res,next)=>{
-//   const id = Number.parseInt(req.params.id)
-//   //conditions needed for input problems
-//   //knex query builder
-//   knex('books')
-//    .create({ })
-//    .then((result)=>{
-//
-//      res.send('')
-//      knex(destroy);
-//    })
-//    .catch((err)=>{
-//      console.log(err);
-//      knex(destroy);
-//      process.exit(1)
-//    })
-//
-//
-// })
+router.post('/books', (req,res,next)=>{
+  const {title, author, genre, description, coverUrl} = req.body;
+  console.log({title, author, genre, description, coverUrl});
+  //convert into an object
+  //conditions needed for input problems for each key of object
+  if(!title||!title.trim()){
+    return res.sendStatus(404)
+  }
+  if(!author||!author.trim()){
+    return res.sendStatus(404)
+  }
+  if(!genre||!genre.trim()){
+    return res.sendStatus(404)
+  }
+
+  if(!description||!description.trim()){
+    return res.sendStatus(404)
+  }
+  if(!coverUrl||!coverUrl.trim()){
+    return res.sendStatus(404)
+  }
+  const newBook = {title, author, genre, description, coverUrl};
+  console.log("NEWBOOK" + newBook);
+  //knex query builder
+  knex('books')
+   .insert(decamelizeKeys(newBook), '*')
+   .then((result)=>{
+     const latestBook = camelizeKeys(result[0])
+     console.log("lATESTBOOK" + latestBook);
+     res.json(latestBook)
+     knex(destroy);
+   })
+   .catch((err) => {
+     next(err)
+   })
+
+
+})
 
 
 //UPDATE a book's table entry
@@ -82,7 +101,7 @@ router.get('/books/:id', (req, res, next) => {
 //    .where('id', id)
 //    .then((result)=>{
 //
-//      res.send('')
+//      res.json('')
 //      knex(destroy);
 //    })
 //    .catch((err)=>{
@@ -103,7 +122,7 @@ router.get('/books/:id', (req, res, next) => {
 //    .where('id', id)
 //    .then((result)=>{
 //
-//      //res.send('')
+//      //res.json('')
 //      knex(destroy);
 //    })
 //    .catch((err)=>{
