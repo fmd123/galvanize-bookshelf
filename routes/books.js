@@ -92,7 +92,7 @@ router.post('/books', (req,res,next)=>{
 //UPDATE a book's table entry
 router.patch('/books/:id', (req,res,next)=>{
   const id = Number.parseInt(req.params.id)
-  console.log('ID ID ID ID ID' + id);
+
   //condition needed for id problems
   if(Number.isNaN(id)){
     return res.sendStatus(404)
@@ -106,7 +106,7 @@ router.patch('/books/:id', (req,res,next)=>{
        return res.sendStatus(404)
      }
      const {title, author, genre, description, coverUrl} = req.body;
-     console.log('REQ.BODY IS ' + {title, author, genre, description, coverUrl});
+
      const revisedBookArr = {}
      //empty array to get the values from req.body
      //one by one...
@@ -141,24 +141,39 @@ router.patch('/books/:id', (req,res,next)=>{
 
 })
 //DELETE a book
-// router.get('/books/:id', (req,res,next)=>{
-//   const id = Number.parseInt(req.params.id)
-//   //condition needed for id problems
-//   //knex query builder
-//   knex('books')
-//    .delete('')
-//    .where('id', id)
-//    .then((result)=>{
-//
-//      //res.json('')
-//      knex(destroy);
-//    })
-//    .catch((err)=>{
-//      console.log(err);
-//      knex(destroy);
-//      process.exit(1)
-//    })
-// })
+router.delete('/books/:id', (req,res,next)=>{
+  const id = Number.parseInt(req.params.id)
+  console.log('ID ID ID ID ID' + id);
+  //condition needed for id problems
+  if(Number.isNaN(id)){
+    return res.sendStatus(404)
+  }
+  //knex query builder
+  let banned;
+  //out here so it gets reset
+  knex('books')
+   .where('id', id)
+   .first()
+   .then((result)=>{
+     if(!result){
+       return res.sendStatus(404)
+     }
+     banned = camelizeKeys(result)
+
+     return knex('books')
+      .del()
+      .where('id', id)
+   })
+   .then(()=>{
+     delete banned.id;
+     res.json(banned)
+   })
+   .catch((err)=>{
+     console.log(err);
+     knex(destroy);
+     process.exit(1)
+   })
+})
 
 
 
