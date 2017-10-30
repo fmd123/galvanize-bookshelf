@@ -24,13 +24,14 @@ switch (app.get('env')) {
 
   default:
 }
-
+const path = require('path');
+app.use(express.static(path.join('public')));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-const path = require('path');
 
-app.use(express.static(path.join('public')));
+
+
 
 // CSRF protection
 app.use((req, res, next) => {
